@@ -1,0 +1,186 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+<%- include('../partials/navigation') %>
+
+<h1>Vehicles: <%= classificationName %></h1>
+
+<div class="vehicle-list">
+  <% vehicles.forEach(vehicle => { %>
+    <div class="vehicle-card">
+      <a href="/inventory/<%= vehicle.inventory_id %>" class="vehicle-link">
+        <div class="vehicle-container">
+          <div class="vehicle-header">
+            <h2><%= vehicle.inv_year || vehicle.year %> <%= vehicle.make %> <%= vehicle.model %></h2>
+          </div>
+
+          <div class="vehicle-content">
+            <div class="vehicle-image">
+              <img src="<%= vehicle.image %>" alt="<%= vehicle.make %> <%= vehicle.model %>">
+            </div>
+
+            <div class="vehicle-details">
+              <h3><%= vehicle.make %> <%= vehicle.model %> Details</h3>
+
+              <div class="vehicle-info">
+                <div class="info-item">
+                  <span class="label">Price:</span> $<%= vehicle.price.toLocaleString() %>
+                </div>
+
+                <div class="info-item description">
+                  <span class="label">Description:</span> <%= vehicle.description %>
+                </div>
+
+                <div class="info-item">
+                  <span class="label">Color:</span> <%= vehicle.color %>
+                </div>
+
+                <div class="info-item">
+                  <span class="label">Miles:</span> <%= vehicle.miles.toLocaleString() %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>
+
+<style>
+.vehicle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin: 2rem auto;
+  max-width: 1200px;
+  padding: 0 2rem;
+}
+
+.vehicle-card {
+  background: #f8f8f8;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vehicle-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.vehicle-container {
+  padding: 2rem;
+}
+
+.vehicle-header {
+  margin-bottom: 2rem;
+}
+
+.vehicle-header h2 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  text-align: left;
+}
+
+.vehicle-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 3rem;
+}
+
+.vehicle-image {
+  flex: 0 0 auto;
+}
+
+.vehicle-image img {
+  width: 400px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.vehicle-details {
+  flex: 1;
+  padding-left: 1rem;
+}
+
+.vehicle-details h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 2rem 0;
+}
+
+.vehicle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.info-item {
+  font-size: 1.2rem;
+  color: #333;
+  line-height: 1.4;
+}
+
+.info-item .label {
+  font-weight: bold;
+  color: #000;
+}
+
+.info-item.description {
+  margin: 1rem 0;
+}
+
+@media (max-width: 768px) {
+  .vehicle-content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .vehicle-image img {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .vehicle-details {
+    padding-left: 0;
+  }
+
+  .vehicle-header h2 {
+    font-size: 2rem;
+  }
+
+  .vehicle-details h3 {
+    font-size: 1.3rem;
+  }
+
+  .info-item {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .vehicle-container {
+    padding: 1.5rem;
+  }
+
+  .vehicle-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .vehicle-details h3 {
+    font-size: 1.2rem;
+  }
+
+  .info-item {
+    font-size: 1rem;
+  }
+}
+</style>

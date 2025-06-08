@@ -1,0 +1,442 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+<%- include('../partials/navigation') %>
+
+<main>
+  <section class="vehicle-detail-flex">
+    <div class="vehicle-detail-left">
+      <div class="inspection-badge">
+        <div class="cert-text">
+          <div class="cert-title">This vehicle has passed inspection</div>
+          <div class="cert-subtitle">by an ASE-certified technician.</div>
+        </div>
+        <img src="/images/certfied.png" alt="Enterprise Certified" class="cert-logo">
+      </div>
+      <div class="main-vehicle-image">
+        <img src="<%= vehicle.image %>" alt="<%= vehicle.year %> <%= vehicle.make %> <%= vehicle.model %>">
+      </div>
+      <div class="vehicle-thumbnails">
+          <img src="<%= vehicle.thumbnail %>" alt="Thumbnail 1">
+          <img src="<%= vehicle.image %>" alt="Thumbnail 2">
+          <img src="<%= vehicle.image %>" alt="Thumbnail 3">
+          <img src="<%= vehicle.image %>" alt="Thumbnail 4">
+          <div class="video-thumbnail">
+            <img src="<%= vehicle.image %>" alt="Video thumbnail">
+            <div class="play-button">▶</div>
+          </div>
+      </div>
+    </div>
+
+    <div class="vehicle-detail-right">
+      <div class="vehicle-header">
+        <h1 class="vehicle-title"><%= vehicle.year %> <%= vehicle.make %> <%= vehicle.model %></h1>
+        <div class="price-mileage-container">
+          <div class="mileage-section">
+            <div class="mileage-label">MILEAGE</div>
+            <div class="mileage-value"><%= vehicle.miles ? vehicle.miles.toLocaleString() : 'N/A' %></div>
+          </div>
+              <span class="price-label">No-Haggle Price <sup>1</sup></span>
+          <div class="price-section">
+            <div class="price-value">$<%= vehicle.price ? vehicle.price.toLocaleString() : 'N/A' %></div>
+            <div class="price-note">Does not include $399 Dealer Reconditioning  service Fee</div>
+            <div class="estimate-payments">
+              <a href="#" class="estimate-link">ESTIMATE PAYMENTS</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="specs-actions-container">
+        <%- vehicleSpecs %>
+
+        <div class="vehicle-actions">
+          <button class="btn-primary">START MY PURCHASE</button>
+          <button class="btn-secondary">CONTACT US</button>
+          <button class="btn-secondary">SCHEDULE TEST DRIVE</button>
+          <button class="btn-secondary">APPLY FOR FINANCING</button>
+        </div>
+      </div>
+      <div class="contact-container">
+      <div class="mpg-section">
+        <div class="mpg-badge">*MPG</div>
+        <div class="mpg-text">
+          <p>The principal prior use of this vehicle was as a Rental Vehicle.</p>
+        </div>
+      </div>
+      <div class="contact-section">
+        <div class="contact-item">
+          <span class="contact-label">Call Us</span>
+        </div>
+         <a href="tel:8013967886" class="contact-value">801-396-7886</a>
+        <div class="contact-item">
+          <span class="contact-label">Visit Us</span>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+
+<style>
+.vehicle-detail-flex {
+  display: flex;
+  gap: 2rem;
+  margin: 2rem auto;
+  max-width: 1200px;
+  padding: 0 1rem;
+  align-items: flex-start;
+}
+
+.vehicle-detail-left {
+  flex: 1;
+  max-width: 450px;
+}
+
+.specs-actions-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+.inspection-badge {
+  background: linear-gradient(135deg, #0c1013 0%, #070c11 100%);
+  color: white;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+}
+
+.inspection-badge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+}
+
+.cert-logo {
+  width: 120px;
+  height: auto;
+}
+
+.cert-text {
+  flex: 1;
+}
+
+.cert-title {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.cert-subtitle {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.main-vehicle-image {
+  margin-top: -2rem;
+  margin-bottom: 1rem;
+}
+
+.main-vehicle-image img {
+  width: 100%;
+  height: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-bottom: 1rem solid #28a745;;
+}
+
+.vehicle-thumbnails {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.vehicle-thumbnails img {
+  width: 85px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 2px solid #ddd;
+  cursor: pointer;
+}
+
+.video-thumbnail {
+  position: relative;
+  width: 70px;
+  height: 50px;
+}
+
+.video-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.7);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+.vehicle-detail-right {
+  flex: 1;
+  max-width: 600px;
+}
+
+.vehicle-header {
+  margin-bottom: 2rem;
+}
+
+.vehicle-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.price-mileage-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  background-color: #E7EDF7;
+  gap: 2rem;
+  align-items: center;
+  padding: 1rem;
+}
+
+.mileage-section {
+  background: #D4DCE8;
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.mileage-label {
+  font-size: 0.9rem;
+  font-weight: bold;
+  background: #fff;
+  color: #000;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+
+.mileage-value {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.price-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.price-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.price-label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  margin-top: -4rem;
+}
+
+.price-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.price-note {
+  font-size: 0.8rem;
+  color: #000;
+  margin-bottom: 0.5rem;
+}
+
+.estimate-link {
+  color: #28a745;;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.vehicle-specs {
+  padding: 1.5rem;
+}
+
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.spec-row:last-child {
+  border-bottom: none;
+}
+
+.spec-label {
+  font-weight: bold;
+  color: #333;
+}
+
+.spec-value {
+  color: #666;
+}
+
+.vehicle-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.btn-primary {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #218838;
+}
+
+.btn-secondary {
+  background: #A5B8D1;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #5a6268;
+}
+
+.contact-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.contact-item {
+
+}
+
+.contact-label {
+  font-weight: bold;
+  color: #333;
+}
+
+.contact-value {
+  color: #28a745;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.mpg-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.mpg-badge {
+  color: #28a745;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.mpg-text {
+  flex: 1;
+}
+
+.mpg-text p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+.contact-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .vehicle-detail-flex {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .specs-actions-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .price-mileage-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .vehicle-title {
+    font-size: 1.5rem;
+  }
+
+  .price-label {
+   margin-top: 0
+  };
+
+  .price-section {
+    align-items: center;
+  };
+
+  .price-value {
+    font-size: 2rem;
+  }
+}
+@media (max-width: 400px) {
+  .vehicle-thumbnails img {
+    width: 65px;
+    height: 50px;
+  }
+}
+</style>
