@@ -13,6 +13,16 @@ const static = require("./routes/static")
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const errorRoutes = require('./routes/errorTest');
+const flash = require('express-flash');
+const session = require('express-session');
+
+app.use(session({
+  secret: 'your1234',
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(flash());
+app.use(express.urlencoded({ extended: true }));
 
 /* ***********************
  * Routes
@@ -27,6 +37,7 @@ app.use((req, res, next) => {
   err.status = 404;
   next(err);
 });
+
 app.use(errorHandler)
 
 /* ***********************
