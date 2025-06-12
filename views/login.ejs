@@ -9,3 +9,79 @@
 <% if (message) { %>
     <p><%= message %></p>
 <% } %>
+
+<style>
+ /* Center the login form on the page */
+form {
+  background: #fff;
+  max-width: 350px;
+  margin: 2.5em auto 0 auto;
+  padding: 2em 2em 1.5em 2em;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2em;
+}
+
+/* Style the heading */
+h1 {
+  text-align: center;
+  color: #23395d;
+  margin-top: 2em;
+  margin-bottom: 1.2em;
+  font-size: 2em;
+}
+
+/* Style the labels and inputs */
+form label {
+  font-weight: 500;
+  color: #23395d;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  margin-bottom: 0.2em;
+}
+
+form input[type="email"],
+form input[type="password"] {
+  padding: 0.6em;
+  border: 1px solid #bfc9d1;
+  border-radius: 4px;
+  font-size: 1em;
+  background: #f9fafb;
+  transition: border 0.2s;
+}
+
+form input:focus {
+  border-color: #2176ae;
+  outline: none;
+}
+
+/* Style the submit button */
+form button[type="submit"] {
+  background: #2176ae;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75em 1.5em;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 0.5em;
+}
+
+form button[type="submit"]:hover {
+  background: #17406d;
+}
+
+/* Style the message paragraph */
+p {
+  text-align: center;
+  margin-top: 1em;
+  color: #c82333;
+  font-weight: 500;
+}
+
+</style>
