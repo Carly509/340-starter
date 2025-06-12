@@ -1,102 +1,163 @@
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const accountModel = require('../models/accountModel') // Adjust path as needed
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { validationResult } = require('express-validator');
+const accountModel = require('../models/accountModel');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret' // Use env var in production
+exports.getRegister = (req, res) => {
+  res.render('register', { message: null });
+};
 
-// Register a new account
-async function register(req, res) {
-  try {
-    const { first_name, last_name, email, password } = req.body
-    // Check if email already exists
-    if (await accountModel.checkExistingEmail(email)) {
-      return res.status(409).json({ message: 'Email already registered' })
-    }
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10)
-    // Register account
-    const account = await accountModel.registerAccount(first_name, last_name, email, hashedPassword)
-    // Create JWT
-    const token = jwt.sign(
-      { account_id: account.account_id, email: account.email, account_type: account.account_type },
-      JWT_SECRET,
-      { expiresIn: '2h' }
-    )
-    res.status(201).json({ account, token })
-  } catch (error) {
-    res.status(500).json({ message: error.message })
+exports.register = async (req, res) => {
+  const { email, password, firstName, lastName } = req.body;
+  if (!email || !password || !firstName || !lastName) {
+    return res.render('register', { message: 'All fields are required.' });
   }
-}
-
-// Login
-async function login(req, res) {
-  try {
-    const { email, password } = req.body
-    const account = await accountModel.getAccountByEmail(email)
-    if (!account) {
-      return res.status(401).json({ message: 'Invalid credentials' })
-    }
-    const valid = await bcrypt.compare(password, account.password)
-    if (!valid) {
-      return res.status(401).json({ message: 'Invalid credentials' })
-    }
-    // Create JWT
-    const token = jwt.sign(
-      { account_id: account.account_id, email: account.email, account_type: account.account_type },
-      JWT_SECRET,
-      { expiresIn: '2h' }
-    )
-    // Remove password before sending
-    delete account.password
-    res.json({ account, token })
-  } catch (error) {
-    res.status(500).json({ message: error.message })
+  const existing = await accountModel.findByEmail(email);
+  if (existing) {
+    return res.render('register', { message: 'Email already registered.' });
   }
-}
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = { email, password: hashedPassword, firstName, lastName, accountType: 'Client', id: Date.now() };
+  await accountModel.addUser(user);
+  res.render('login', { message: 'Registration successful. Please log in.' });
+};
 
-// Get account info (protected)
-async function getAccount(req, res) {
-  try {
-    const { account_id } = req.user // Set by JWT middleware
-    const account = await accountModel.getAccountById(account_id)
-    if (!account) {
-      return res.status(404).json({ message: 'Account not found' })
-    }
-    res.json(account)
-  } catch (error) {
-    res.status(500).json({ message: error.message })
+exports.getLogin = (req, res) => {
+  const token = req.cookies.token;
+  if (token) {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (!err) {
+        return res.redirect('/inventory');
+      }
+      res.render('login', { message: null });
+    });
+  } else {
+    res.render('login', { message: null });
   }
-}
+};
 
-// Update account info (protected)
-async function updateAccount(req, res) {
-  try {
-    const { account_id } = req.user
-    const { first_name, last_name, email, account_type } = req.body
-    const updated = await accountModel.updateAccountInfo(account_id, first_name, last_name, email, account_type)
-    res.json(updated)
-  } catch (error) {
-    res.status(500).json({ message: error.message })
+
+exports.login = async (req, res) => {
+  const { email, password } = req.body;
+  const user = await accountModel.findByEmail(email);
+  if (!user) {
+    return res.render('login', { message: 'Invalid email or password.' });
   }
-}
-
-// Update password (protected)
-async function updatePassword(req, res) {
-  try {
-    const { account_id } = req.user
-    const { password } = req.body
-    const hashedPassword = await bcrypt.hash(password, 10)
-    await accountModel.updateAccountPassword(account_id, hashedPassword)
-    res.json({ message: 'Password updated' })
-  } catch (error) {
-    res.status(500).json({ message: error.message })
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    return res.render('login', { message: 'Invalid email or password.' });
   }
-}
 
-module.exports = {
-  register,
-  login,
-  getAccount,
-  updateAccount,
-  updatePassword
-}
+  const token = jwt.sign(
+    { account_id: user.account_id,
+    email: user.email,
+    account_type: user.account_type,
+    first_name: user.first_name,
+    last_name: user.last_name },
+    process.env.JWT_SECRET,
+    { expiresIn: '1h' }
+  );
+  res.cookie('token', token, { httpOnly: true });
+  res.redirect('/inventory');
+};
+
+exports.logout = (req, res) => {
+  res.clearCookie('token');
+  res.redirect('/');
+};
+
+exports.getUpdateView = async (req, res) => {
+  const account = await accountModel.getAccountById(req.user.account_id);
+  console.log('Account:', account);
+  res.render('account/update', {
+    account,
+    user: req.user,
+    messages: req.flash(),
+    errors: []
+  });
+};
+
+// POST: Update account info
+exports.updateAccount = async (req, res) => {
+  const errors = validationResult(req);
+  console.log('ddd',req.body)
+  const account = {
+  account_id: req.body.account_id,
+  firstName: req.body.firstName,
+  lastName: req.body.lastName,
+  email: req.body.email
+  };
+
+  if (!errors.isEmpty()) {
+    return res.render('account/update', {
+      account,
+      user: req.user,
+      messages: req.flash(),
+      errors: errors.array()
+    });
+  }
+
+  const existing = await accountModel.getAccountByEmail(account.email);
+  if (existing && existing.account_id != account.account_id) {
+    return res.render('account/update', {
+      account,
+      user: req.user,
+      messages: { error: 'Email already in use.' },
+      errors: []
+    });
+  }
+
+  const result = await accountModel.updateAccountInfo(account);
+  if (result) {
+    req.flash('success', 'Account updated successfully!');
+    return res.redirect('/inventory');
+  } else {
+    req.flash('error', 'Update failed.');
+    return res.render('account/update', {
+      account,
+      user: req.user,
+      messages: req.flash(),
+      errors: []
+    });
+  }
+};
+
+exports.getChangePasswordView = async (req, res) => {
+  const account = await accountModel.getAccountById(req.user.account_id);
+  res.render('account/change-password', {
+    account,
+    user: req.user,
+    messages: req.flash(),
+    errors: []
+  });
+};
+
+exports.changePassword = async (req, res) => {
+  const errors = validationResult(req);
+  const account = await accountModel.getAccountById(req.body.account_id);
+
+  if (!errors.isEmpty()) {
+    return res.render('account/change-password', {
+      account,
+      user: req.user,
+      messages: req.flash(),
+      errors: errors.array()
+    });
+  }
+
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+  const result = await accountModel.updatePassword(account.account_id, hashedPassword);
+
+  if (result) {
+    req.flash('success', 'Password updated successfully!');
+    return res.redirect('/inventory');
+  } else {
+    req.flash('error', 'Password update failed.');
+    return res.render('account/change-password', {
+      account,
+      user: req.user,
+      messages: req.flash(),
+      errors: []
+    });
+  }
+};

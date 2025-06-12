@@ -1,11 +1,85 @@
-
 <header>
-    <div class="header-wrapper">
-        <div class="site-name">
-            <h1>CSE Motors</h1>
-        </div>
-        <div class="account-link">
-            <a href="/account">MY ACCOUNT</a>
-        </div>
+  <div class="header-wrapper">
+    <div class="site-name">
+      <h1>CSE Motors</h1>
     </div>
+    <div class="account-link">
+      <% if (user) { %>
+        <div class="dropdown">
+          <button class="dropdown-toggle">
+            Welcome <%= user.first_name %> ▼
+          </button>
+          <div class="dropdown-menu">
+            <a href="/account/update">Edit Profile</a>
+            <a href="/account/change-password">Change Password</a>
+            <a href="/account/logout">Logout</a>
+          </div>
+        </div>
+      <% } else { %>
+        <a href="/account/login">MY ACCOUNT</a>
+      <% } %>
+    </div>
+  </div>
 </header>
+
+<style>
+    /* Dropdown container */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown toggle button */
+.dropdown-toggle {
+  background: none;
+  border: none;
+  color: #23395d;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.dropdown-toggle:hover,
+.dropdown-toggle:focus {
+  background: #f0f4fa;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 110%;
+  background: #fff;
+  min-width: 180px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  border-radius: 6px;
+  z-index: 1000;
+  padding: 0.5em 0;
+}
+
+/* Show dropdown on hover or focus-within */
+.dropdown:hover .dropdown-menu,
+.dropdown:focus-within .dropdown-menu {
+  display: block;
+}
+
+/* Dropdown links */
+.dropdown-menu a {
+  display: block;
+  padding: 0.75em 1.2em;
+  color: #23395d;
+  text-decoration: none;
+  font-size: 1em;
+  transition: background 0.2s, color 0.2s;
+}
+
+.dropdown-menu a:hover {
+  background: #f0f4fa;
+  color: #17406d;
+}
+
+</style>

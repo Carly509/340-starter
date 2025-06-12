@@ -1,0 +1,46 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header', { user: user }) %>
+
+<main>
+  <div class="account-management">
+    <!-- Display any flash messages -->
+    <% if (messages && messages.length > 0) { %>
+      <div class="messages">
+        <% messages.forEach(function(message) { %>
+          <div class="notice"><%= message %></div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <!-- Welcome greeting for all users -->
+    <h2>Welcome <%= locals.accountData.first_name %></h2>
+
+    <!-- Update account link - appears for all users -->
+    <p>
+      <a href="/account/update/<%= locals.accountData.account_id %>" class="update-account-link">
+        Update Account Information
+      </a>
+    </p>
+
+    <!-- Inventory Management section - only for Employee and Admin -->
+    <% if (locals.accountData.account_type === 'Employee' || locals.accountData.account_type === 'Admin') { %>
+      <h3>Inventory Management</h3>
+      <p>
+        <a href="/inventory/" class="inventory-management-link">
+          Manage Inventory
+        </a>
+      </p>
+    <% } %>
+
+    <!-- Additional account management options can be added here -->
+    <div class="account-options">
+      <h3>Account Options</h3>
+      <ul>
+        <li><a href="/account/change-password/<%= locals.accountData.account_id %>">Change Password</a></li>
+        <li><a href="/account/logout">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

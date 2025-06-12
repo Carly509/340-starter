@@ -3,7 +3,6 @@ const inventoryModel = require('../models/inventoryModel');
 const utilities = require('../views/partials/utilities/classification');
 const { validationResult } = require('express-validator');
 
-// Existing functions
 exports.detail = async (req, res, next) => {
   try {
     const id = req.params.id;
@@ -16,7 +15,7 @@ exports.detail = async (req, res, next) => {
       console.error('vehicleSpecsHTML error:', utilErr);
       vehicleSpecs = '<div>Error loading specs</div>';
     }
-    res.render('inventory/detail', { vehicle, vehicleSpecs });
+    res.render('inventory/detail', { vehicle, vehicleSpecs, user: req.user || null });
   } catch (err) {
     console.error('Controller error:', err);
     next(err);
@@ -24,35 +23,32 @@ exports.detail = async (req, res, next) => {
 };
 
 exports.getVehiclesByClassification = async (req, res) => {
-  console.log('inventoryModel:', inventoryModel);
-  console.log('getVehiclesByClassification called');
-  console.log( 'red', req.params)
   try {
     const classificationName = req.params.classificationName;
     const vehicles = await inventoryModel.getVehiclesByClassification(classificationName);
 
     if (vehicles.length === 0) {
-      return res.status(404).render('inventory/no-vehicles', { classificationName });
+      return res.status(404).render('inventory/no-vehicles', { classificationName, user: req.user || null });
     }
 
     res.render('inventory/vehicle-list', {
       vehicles,
-      classificationName
+      classificationName,
+      user: req.user || null
     });
   } catch (error) {
     console.error(error);
-    res.status(500).render('inventory/error', { message: 'Server error retrieving vehicles.' });
+    res.status(500).render('inventory/error', { message: 'Server error retrieving vehicles.', user: req.user || null });
   }
 };
 
-// NEW FUNCTIONS FOR THE TASKS
-
-// Task 1: Show management view
 exports.showManagement = async (req, res) => {
+  console.log("jh",req.user)
   try {
     res.render('inventory/management', {
       title: 'Inventory Management',
-      messages: req.flash()
+      messages: req.flash(),
+      user: req.user || null
     });
   } catch (error) {
     console.error(error);
@@ -60,13 +56,13 @@ exports.showManagement = async (req, res) => {
   }
 };
 
-// Task 2: Show add classification form
 exports.showAddClassification = async (req, res) => {
   try {
     res.render('inventory/add-classification', {
       title: 'Add New Classification',
       messages: req.flash(),
-      errors: null
+      errors: null,
+      user: req.user || null
     });
   } catch (error) {
     console.error(error);
@@ -74,7 +70,6 @@ exports.showAddClassification = async (req, res) => {
   }
 };
 
-// Task 2: Process add classification
 exports.addClassification = async (req, res) => {
   const errors = validationResult(req);
 
@@ -82,7 +77,8 @@ exports.addClassification = async (req, res) => {
     return res.render('inventory/add-classification', {
       title: 'Add New Classification',
       messages: req.flash(),
-      errors: errors.array()
+      errors: errors.array(),
+      user: req.user || null
     });
   }
 
@@ -92,18 +88,19 @@ exports.addClassification = async (req, res) => {
 
     if (result) {
       req.flash('success', 'Classification added successfully!');
-      // Regenerate navigation to include new classification
       res.locals.nav = await utilities.getNav();
       res.render('inventory/management', {
         title: 'Inventory Management',
-        messages: req.flash()
+        messages: req.flash(),
+        user: req.user || null
       });
     } else {
       req.flash('error', 'Failed to add classification');
       res.render('inventory/add-classification', {
         title: 'Add New Classification',
         messages: req.flash(),
-        errors: null
+        errors: null,
+        user: req.user || null
       });
     }
   } catch (error) {
@@ -112,12 +109,12 @@ exports.addClassification = async (req, res) => {
     res.render('inventory/add-classification', {
       title: 'Add New Classification',
       messages: req.flash(),
-      errors: null
+      errors: null,
+      user: req.user || null
     });
   }
 };
 
-// Task 3: Show add inventory form
 exports.showAddInventory = async (req, res) => {
   try {
     const classificationList = await utilities.buildClassificationList();
@@ -125,7 +122,8 @@ exports.showAddInventory = async (req, res) => {
       title: 'Add New Vehicle',
       messages: req.flash(),
       errors: null,
-      classificationList
+      classificationList,
+      user: req.user || null
     });
   } catch (error) {
     console.error(error);
@@ -133,7 +131,6 @@ exports.showAddInventory = async (req, res) => {
   }
 };
 
-// Task 3: Process add inventory
 exports.addInventory = async (req, res) => {
   const errors = validationResult(req);
 
@@ -144,7 +141,8 @@ exports.addInventory = async (req, res) => {
       messages: req.flash(),
       errors: errors.array(),
       classificationList,
-      ...req.body // Keep form data sticky
+      ...req.body,
+      user: req.user || null
     });
   }
 
@@ -168,7 +166,8 @@ exports.addInventory = async (req, res) => {
       req.flash('success', 'Vehicle added successfully!');
       res.render('inventory/management', {
         title: 'Inventory Management',
-        messages: req.flash()
+        messages: req.flash(),
+        user: req.user || null
       });
     } else {
       req.flash('error', 'Failed to add vehicle');
@@ -178,7 +177,8 @@ exports.addInventory = async (req, res) => {
         messages: req.flash(),
         errors: null,
         classificationList,
-        ...req.body
+        ...req.body,
+        user: req.user || null
       });
     }
   } catch (error) {
@@ -190,7 +190,8 @@ exports.addInventory = async (req, res) => {
       messages: req.flash(),
       errors: null,
       classificationList,
-      ...req.body
+      ...req.body,
+      user: req.user || null
     });
   }
 };

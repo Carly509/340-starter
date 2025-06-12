@@ -9,7 +9,7 @@ router.use("/js", express.static(__dirname + "public/js"));
 router.use("/images", express.static(__dirname + "public/images"));
 
 router.get("/", (req, res) => {
-    res.render("index");
+    res.render('index', { user: req.user || null });
 });
 
 module.exports = router;
