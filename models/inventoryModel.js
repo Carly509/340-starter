@@ -116,3 +116,62 @@ exports.addVehicle = async (vehicleData) => {
   const result = await pool.query(query, values);
   return result.rows[0];
 };
+
+exports.searchVehicles = async (filters) => {
+  let query = `
+    SELECT
+      inventory_id,
+      inv_make AS make,
+      inv_model AS model,
+      inv_year AS year,
+      inv_description AS description,
+      inv_image AS image,
+      inv_thumbnail AS thumbnail,
+      inv_price AS price,
+      inv_miles AS miles,
+      inv_color AS color,
+      classification_id
+    FROM inventory
+    WHERE 1=1
+  `;
+  const params = [];
+
+  if (filters.make) {
+    params.push(`%${filters.make}%`);
+    query += ` AND inv_make ILIKE $${params.length}`;
+  }
+  if (filters.model) {
+    params.push(`%${filters.model}%`);
+    query += ` AND inv_model ILIKE $${params.length}`;
+  }
+  if (filters.minYear) {
+    params.push(filters.minYear);
+    query += ` AND inv_year >= $${params.length}`;
+  }
+  if (filters.maxYear) {
+    params.push(filters.maxYear);
+    query += ` AND inv_year <= $${params.length}`;
+  }
+  if (filters.minPrice) {
+    params.push(filters.minPrice);
+    query += ` AND inv_price >= $${params.length}`;
+  }
+  if (filters.maxPrice) {
+    params.push(filters.maxPrice);
+    query += ` AND inv_price <= $${params.length}`;
+  }
+  if (filters.classification_id) {
+    params.push(filters.classification_id);
+    query += ` AND classification_id = $${params.length}`;
+  }
+  if (filters.color) {
+    params.push(`%${filters.color}%`);
+    query += ` AND inv_color ILIKE $${params.length}`;
+  }
+
+  query += ' ORDER BY inv_year DESC, inv_make ASC';
+
+  const { rows } = await pool.query(query, params);
+  console.log(rows)
+  return rows;
+};

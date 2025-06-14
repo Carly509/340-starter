@@ -1,0 +1,183 @@
+<div class="container">
+  <h1><%= title %></h1>
+  <form method="get" action="/inventory/search">
+    <label>
+      Make
+      <input type="text" name="make" value="<%= filters.make %>">
+    </label>
+    <label>
+      Model
+      <input type="text" name="model" value="<%= filters.model %>">
+    </label>
+    <label>
+      Year (min)
+      <input type="number" name="minYear" min="1900" max="2100" value="<%= filters.minYear %>">
+    </label>
+    <label>
+      Year (max)
+      <input type="number" name="maxYear" min="1900" max="2100" value="<%= filters.maxYear %>">
+    </label>
+    <label>
+      Price (min)
+      <input type="number" name="minPrice" min="0" value="<%= filters.minPrice %>">
+    </label>
+    <label>
+      Price (max)
+      <input type="number" name="maxPrice" min="0" value="<%= filters.maxPrice %>">
+    </label>
+    <label>
+      Classification
+      <select name="classification_id">
+        <option value="">Any</option>
+        <%- classificationList %>
+      </select>
+    </label>
+    <label>
+      Color
+      <input type="text" name="color" value="<%= filters.color %>">
+    </label>
+    <button type="submit">Search</button>
+  </form>
+
+  <div class="results">
+    <% if (vehicles && vehicles.length) { %>
+      <ul class="vehicle-list">
+        <% vehicles.forEach(vehicle => { %>
+          <li>
+            <img class="vehicle-thumb" src="<%= vehicle.thumbnail || '/images/vehicles/no-image-tn.png' %>" alt="Vehicle thumbnail">
+            <div class="vehicle-info">
+              <div class="vehicle-title">
+                <a href="/inventory/detail/<%= vehicle.inventory_id %>">
+                  <%= vehicle.year %> <%= vehicle.make %> <%= vehicle.model %>
+                </a>
+                <span class="vehicle-price">$<%= vehicle.price.toLocaleString ? vehicle.price.toLocaleString() : vehicle.price %></span>
+              </div>
+              <div class="vehicle-meta">
+                <span>Miles: <%= vehicle.miles ? vehicle.miles.toLocaleString() : 'N/A' %></span> |
+                <span>Color: <%= vehicle.color %></span>
+              </div>
+            </div>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else if (Object.values(filters).some(val => val)) { %>
+      <div class="no-results">No vehicles found matching your criteria.</div>
+    <% } %>
+  </div>
+</div>
+
+<style>
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f8f9fa;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  max-width: 900px;
+  margin: 40px auto 0 auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 32px;
+}
+h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 32px;
+}
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 32px;
+  background: #f1f3f6;
+  padding: 20px 24px;
+  border-radius: 8px;
+}
+form label {
+  flex: 1 1 180px;
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  color: #34495e;
+}
+form input, form select {
+  margin-top: 5px;
+  padding: 7px 8px;
+  border: 1px solid #ccd6df;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+form button {
+  flex: 1 1 100px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 27px;
+  transition: background 0.2s;
+}
+form button:hover {
+  background: #0056b3;
+}
+.results {
+  margin-top: 20px;
+}
+.vehicle-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.vehicle-list li {
+  background: #f6fafd;
+  border: 1px solid #e3e9ef;
+  border-radius: 6px;
+  margin-bottom: 14px;
+  padding: 18px 16px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  transition: box-shadow 0.2s;
+}
+.vehicle-list li:hover {
+  box-shadow: 0 2px 10px rgba(0,123,255,0.08);
+}
+.vehicle-thumb {
+  width: 100px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #e0e6eb;
+  background: #fff;
+}
+.vehicle-info {
+  flex-grow: 1;
+}
+.vehicle-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 4px;
+}
+.vehicle-meta {
+  color: #555;
+  font-size: 0.98rem;
+}
+.vehicle-price {
+  color: #007bff;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-left: 12px;
+}
+.no-results {
+  color: #c00;
+  font-size: 1.1rem;
+  text-align: center;
+  margin-top: 30px;
+}
+</style>

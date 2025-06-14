@@ -195,3 +195,40 @@ exports.addInventory = async (req, res) => {
     });
   }
 };
+
+
+exports.search = async (req, res) => {
+  try {
+    const filters = {
+      make: req.query.make || '',
+      model: req.query.model || '',
+      minYear: req.query.minYear || '',
+      maxYear: req.query.maxYear || '',
+      minPrice: req.query.minPrice || '',
+      maxPrice: req.query.maxPrice || '',
+      classification_id: req.query.classification_id || '',
+      color: req.query.color || '',
+    };
+
+    let vehicles = [];
+    if (Object.values(filters).some(val => val)) {
+      vehicles = await inventoryModel.searchVehicles(filters);
+    }
+
+    const classificationList = await utilities.buildClassificationList(filters.classification_id);
+
+    res.render('inventory/search', {
+      title: 'Search Vehicles',
+      
+      filters,
+      vehicles,
+      user: req.user || null,
+      classificationList,
+      messages: req.flash(),
+      errors: null,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('inventory/error', { message: 'Server error retrieving search results.' });
+  }
+};

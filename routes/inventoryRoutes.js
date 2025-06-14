@@ -16,4 +16,6 @@ router.post('/add-inventory', authenticateToken, validation.validateInventory, i
 router.get('/classification/:classificationName', inventoryController.getVehiclesByClassification);
 router.get('/detail/:id', inventoryController.detail);
 
+router.get('/search', inventoryController.search);
+
 module.exports = router;
